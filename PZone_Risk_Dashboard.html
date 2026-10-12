@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P.Zone x TMG | Executive Risk Dashboard</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        cyan: { 400: '#22d3ee', 500: '#06b6d4' },
+                        blue: { 500: '#3b82f6', 600: '#2563eb' },
+                        emerald: { 400: '#34d399', 500: '#10b981' },
+                        rose: { 500: '#f43f5e' },
+                        amber: { 500: '#f59e0b' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body { background-color: #060B14; color: #f8fafc; overflow: hidden; }
+        
+        /* Grid Overlay from Vercel Design */
+        .grid-bg {
+            position: fixed; inset: 0; pointer-events: none; opacity: 0.025;
+            background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 60px 60px; z-index: -1;
+        }
+
+        /* Flow-card styling from Vercel Design */
+        .flow-card {
+            background: rgba(11, 19, 41, 0.8);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 24px 70px -15px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06), 0 1px 0 rgba(255,255,255,0.12) inset;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Top accent line */
+        .card-accent {
+            position: absolute; top: 0; left: 2rem; right: 2rem; height: 1px;
+            background: linear-gradient(to right, transparent, rgba(34, 211, 238, 0.4), transparent);
+            pointer-events: none;
+        }
+
+        .flow-btn {
+            background: linear-gradient(to right, #06b6d4, #3b82f6, #2563eb);
+            box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.2);
+        }
+        .flow-btn:hover { background: linear-gradient(to right, #22d3ee, #60a5fa, #3b82f6); box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.3); }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
+        th { background: rgba(255,255,255,0.02); padding: 16px; font-weight: 600; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #e2e8f0; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.01); }
+    </style>
+</head>
+<body class="antialiased flex h-screen selection:bg-emerald-500 selection:text-white">
+
+    <!-- Ambient Blurs from Vercel Design -->
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div class="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-cyan-500/[0.06] blur-[120px]"></div>
+        <div class="absolute bottom-[-15%] right-[-10%] w-[400px] h-[400px] rounded-full bg-blue-600/[0.05] blur-[100px]"></div>
+        <div class="absolute top-[40%] right-[15%] w-[250px] h-[250px] rounded-full bg-emerald-500/[0.03] blur-[80px]"></div>
+    </div>
+    <div class="grid-bg"></div>
+
+    <!-- Sidebar -->
+    <aside class="w-72 border-r border-white/[0.08] bg-[#060B14]/50 backdrop-blur-md flex flex-col z-20">
+        <div class="h-24 flex flex-col justify-center px-8 border-b border-white/[0.06]">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-cyan-500/20">PZ</div>
+                <span class="text-lg font-bold text-white tracking-wide">P.ZONE Engine</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium tracking-wide mt-1">Water Scope Construction Projects</p>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <p class="px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 mt-4">Dashboard</p>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.05] text-white border border-white/[0.08] font-semibold transition-all">
+                <i class="fa-solid fa-chart-pie w-4 text-cyan-400"></i> Risk Analysis
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] font-semibold transition-all">
+                <i class="fa-solid fa-money-bill-transfer w-4"></i> Cash Flow
+            </a>
+            
+            <p class="px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 mt-8">Projects</p>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] font-semibold transition-all">
+                <i class="fa-solid fa-umbrella-beach w-4"></i> SouthMed Lagoons
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] font-semibold transition-all">
+                <i class="fa-solid fa-city w-4"></i> Noor City Smart Water
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto relative z-10">
+        
+        <!-- Header -->
+        <header class="h-24 sticky top-0 flex items-center justify-between px-10 z-30 bg-[#060B14]/80 backdrop-blur-xl border-b border-white/[0.06]">
+            <div>
+                <h2 class="text-xl font-bold text-white tracking-tight">Executive Risk Summary</h2>
+                <p class="text-xs text-slate-400 mt-1">P.Zone Subcontractor Posture vs TMG Projects</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="exportCSV()" class="flow-btn px-6 py-2.5 rounded-xl text-xs font-bold text-white transition-all cursor-pointer">
+                    Export CSV <i class="fa-solid fa-download ml-2"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Padding -->
+        <div class="p-10 space-y-8">
+
+            <!-- KPI Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="flow-card p-6 group">
+                    <div class="card-accent"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-water text-5xl text-cyan-400"></i></div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">SouthMed Volume</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-3xl font-bold text-white font-mono drop-shadow-[0_4px_24px_rgba(0,200,255,0.28)]">107</h3>
+                        <span class="text-xs text-cyan-400 font-bold">km</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-3 font-medium">Swimmable Seawater Lagoons</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="flow-card p-6 group">
+                    <div class="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-rose-500/40 to-transparent pointer-events-none"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-vault text-5xl text-rose-500"></i></div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">TMG Cash Conversion</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-3xl font-bold text-white font-mono drop-shadow-[0_4px_24px_rgba(244,63,94,0.28)]">31.0<span class="text-xl">%</span></h3>
+                    </div>
+                    <p class="text-[11px] text-rose-400 mt-3 font-medium">High Risk: Payment Delays</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="flow-card p-6 group">
+                    <div class="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent pointer-events-none"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-clock-rotate-left text-5xl text-amber-500"></i></div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Expected Payment Cycle</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-3xl font-bold text-white font-mono drop-shadow-[0_4px_24px_rgba(245,158,11,0.28)]">90-120</h3>
+                        <span class="text-xs text-amber-500 font-bold">days</span>
+                    </div>
+                    <p class="text-[11px] text-amber-500/80 mt-3 font-medium">Pay-When-Paid Contracts</p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="flow-card p-6 group">
+                    <div class="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent pointer-events-none"></div>
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-handshake-angle text-5xl text-emerald-500"></i></div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Tech Edge / Partners</p>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <h3 class="text-xl font-bold text-white drop-shadow-[0_4px_24px_rgba(16,185,129,0.28)]">CSCEC / Ghesa</h3>
+                    </div>
+                    <p class="text-[11px] text-emerald-400 mt-4 font-medium">Turnkey & MEP Solutions</p>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="flow-card p-8 lg:col-span-2">
+                    <div class="card-accent"></div>
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-sm font-bold text-white tracking-wide">Strategic Risk Vector Analysis</h3>
+                        <div class="px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-slate-300 text-[10px] font-bold tracking-wider">LIVE DATA</div>
+                    </div>
+                    <div class="relative h-72 w-full">
+                        <canvas id="riskBarChart"></canvas>
+                    </div>
+                </div>
+                <div class="flow-card p-8">
+                    <div class="card-accent"></div>
+                    <h3 class="text-sm font-bold text-white tracking-wide mb-6">Cost Structure & FX Exposure</h3>
+                    <div class="relative h-64 w-full flex items-center justify-center">
+                        <canvas id="fxDoughnutChart"></canvas>
+                        <!-- Center Text for Doughnut -->
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-2">
+                            <span class="text-3xl font-mono font-bold text-white drop-shadow-[0_4px_24px_rgba(244,63,94,0.3)]">70%</span>
+                            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mt-1">Foreign Comp.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Register Table -->
+            <div class="flow-card overflow-hidden">
+                <div class="card-accent"></div>
+                <div class="p-8 border-b border-white/[0.06] flex justify-between items-center">
+                    <h3 class="text-sm font-bold text-white tracking-wide">Detailed Risk Register</h3>
+                    <div class="flex gap-4">
+                        <span class="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase"><span class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></span> High</span>
+                        <span class="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase"><span class="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span> Medium</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto pb-4">
+                    <table class="w-full text-[13px]" id="riskTable">
+                        <thead>
+                            <tr>
+                                <th class="w-1/6">Project</th>
+                                <th class="w-2/6">Risk Factor</th>
+                                <th class="w-1/6">Severity</th>
+                                <th class="w-2/6">Mitigation Strategy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-bold text-white pl-8">SouthMed</td>
+                                <td>
+                                    <p class="font-bold text-white mb-1">Equipment Corrosion</p>
+                                    <p class="text-[11px] text-slate-400">Seawater causes early failure of pumps and filters.</p>
+                                </td>
+                                <td>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/[0.04] border border-rose-500/30 text-rose-400 text-[10px] font-bold tracking-wider uppercase shadow-[0_0_10px_rgba(244,63,94,0.1)]">High</span>
+                                </td>
+                                <td>
+                                    <p class="text-slate-300">Enforce <span class="text-cyan-400 font-semibold">Seawater-grade</span> specs. Reject substandard imports.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold text-white pl-8">All Projects</td>
+                                <td>
+                                    <p class="font-bold text-white mb-1">FX Volatility</p>
+                                    <p class="text-[11px] text-slate-400">Fixed-price contracts for imported components.</p>
+                                </td>
+                                <td>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/[0.04] border border-rose-500/30 text-rose-400 text-[10px] font-bold tracking-wider uppercase shadow-[0_0_10px_rgba(244,63,94,0.1)]">High</span>
+                                </td>
+                                <td>
+                                    <p class="text-slate-300">Mandate <span class="text-cyan-400 font-semibold">Price Escalation</span> clause or USD peg for foreign parts.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold text-white pl-8">Noor City</td>
+                                <td>
+                                    <p class="font-bold text-white mb-1">Smart Systems Integration</p>
+                                    <p class="text-[11px] text-slate-400">Delays linking water features to central BMS.</p>
+                                </td>
+                                <td>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/[0.04] border border-amber-500/30 text-amber-400 text-[10px] font-bold tracking-wider uppercase shadow-[0_0_10px_rgba(245,158,11,0.1)]">Medium</span>
+                                </td>
+                                <td>
+                                    <p class="text-slate-300">Define strict Interface Matrix with the main civil contractor early.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold text-white pl-8">TMG General</td>
+                                <td>
+                                    <p class="font-bold text-white mb-1">Site Readiness Delays</p>
+                                    <p class="text-[11px] text-slate-400">Concrete Plus or Atrium delays in basin handovers.</p>
+                                </td>
+                                <td>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/[0.04] border border-amber-500/30 text-amber-400 text-[10px] font-bold tracking-wider uppercase shadow-[0_0_10px_rgba(245,158,11,0.1)]">Medium</span>
+                                </td>
+                                <td>
+                                    <p class="text-slate-300">Formalize site handovers. File immediate <span class="text-cyan-400 font-semibold">EOT</span> claims.</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Export CSV Functionality
+        function exportCSV() {
+            let csv = [];
+            const rows = document.querySelectorAll("#riskTable tr");
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++) {
+                    let text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " - ").replace(/"/g, '""');
+                    row.push('"' + text + '"');
+                }
+                csv.push(row.join(","));
+            }
+            const csvFile = new Blob(["\uFEFF" + csv.join("\n")], {type: "text/csv;charset=utf-8;"});
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(csvFile);
+            link.download = "PZone_TMG_Risk_Matrix.csv";
+            link.click();
+        }
+
+        // Initialize Chart.js
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = "#94a3b8";
+        Chart.defaults.scale.grid.color = "rgba(255, 255, 255, 0.04)";
+
+        window.onload = function() {
+            const ctxBar = document.getElementById('riskBarChart').getContext('2d');
+            
+            const gradientRose = ctxBar.createLinearGradient(0, 0, 0, 400);
+            gradientRose.addColorStop(0, 'rgba(244, 63, 94, 1)');
+            gradientRose.addColorStop(1, 'rgba(244, 63, 94, 0.1)');
+
+            const gradientAmber = ctxBar.createLinearGradient(0, 0, 0, 400);
+            gradientAmber.addColorStop(0, 'rgba(245, 158, 11, 1)');
+            gradientAmber.addColorStop(1, 'rgba(245, 158, 11, 0.1)');
+            
+            const gradientCyan = ctxBar.createLinearGradient(0, 0, 0, 400);
+            gradientCyan.addColorStop(0, 'rgba(6, 182, 212, 1)');
+            gradientCyan.addColorStop(1, 'rgba(6, 182, 212, 0.1)');
+
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Liquidity & FX', 'Coastal Corrosion', 'Site Delays', 'Smart Systems', 'Lost O&M'],
+                    datasets: [{
+                        label: 'Severity Level (%)',
+                        data: [95, 85, 75, 60, 40],
+                        backgroundColor: [gradientRose, gradientRose, gradientAmber, gradientCyan, 'rgba(255,255,255,0.08)'],
+                        borderColor: ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.1)', 'rgba(255,255,255,0.1)', 'rgba(255,255,255,0.1)', 'rgba(255,255,255,0.05)'],
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        barThickness: 'flex',
+                        maxBarThickness: 32
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(11, 19, 41, 0.9)',
+                            titleFont: { size: 13, family: 'Inter', weight: 'bold' },
+                            bodyFont: { size: 12, family: 'Inter' },
+                            padding: 12,
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            max: 100,
+                            border: { display: false },
+                            ticks: { padding: 10, font: { size: 11 } }
+                        },
+                        x: { 
+                            border: { display: false },
+                            grid: { display: false },
+                            ticks: { padding: 10, font: { weight: 600, size: 11 } }
+                        }
+                    }
+                }
+            });
+
+            const ctxDoughnut = document.getElementById('fxDoughnutChart').getContext('2d');
+            new Chart(ctxDoughnut, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Imported (FX Risk)', 'Local Labor/Parts'],
+                    datasets: [{
+                        data: [70, 30],
+                        backgroundColor: ['#f43f5e', '#06b6d4'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '82%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: { family: 'Inter', size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(11, 19, 41, 0.9)',
+                            bodyFont: { family: 'Inter', size: 13 },
+                            padding: 12,
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            cornerRadius: 8
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

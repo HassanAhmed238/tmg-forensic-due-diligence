@@ -1,0 +1,1126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>P.ZONE × TMGH — Strategic Due Diligence &amp; Capital Harness</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #FAF1E2;   /* warm buttery cream paper */
+    --ink:   #B53D2A;   /* warm rust / terracotta red */
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; background: #0a0a0a; }
+  h1, h2, h3, p { margin: 0; }
+  body {
+    font-family: 'Fraunces', Georgia, serif;
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  .deck { position: fixed; inset: 0; display: grid; place-items: center; }
+  .stage {
+    position: relative;
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+    background: var(--paper);
+  }
+
+  .stage::before {
+    content: '';
+    position: absolute; inset: 0;
+    pointer-events: none;
+    opacity: 0.10;
+    background-image: radial-gradient(circle at 1px 1px, rgba(181,61,42,0.5) 0.5px, transparent 1px);
+    background-size: 4px 4px;
+    z-index: 3;
+  }
+  .stage:has(.s-closing.active)::before {
+    background-image: radial-gradient(circle at 1px 1px, rgba(250,241,226,0.5) 0.5px, transparent 1px);
+    opacity: 0.07;
+  }
+
+  .slide {
+    position: absolute; inset: 0;
+    opacity: 0; pointer-events: none;
+    transition: opacity 300ms cubic-bezier(.16, 1, .3, 1);
+    z-index: 2;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .slide.active .grid > *,
+  .slide.active .frame > *,
+  .slide.active .footer-line {
+    animation: rise 560ms cubic-bezier(.16, 1, .3, 1) both;
+  }
+  .slide.active .grid > :nth-child(2),
+  .slide.active .frame > :nth-child(2) { animation-delay: 70ms; }
+  .slide.active .grid > :nth-child(3),
+  .slide.active .frame > :nth-child(3) { animation-delay: 140ms; }
+  .slide.active .grid > :nth-child(4),
+  .slide.active .frame > :nth-child(4) { animation-delay: 210ms; }
+  .slide.active .grid > :nth-child(5),
+  .slide.active .frame > :nth-child(5) { animation-delay: 280ms; }
+  .slide.active .footer-line           { animation-delay: 210ms; }
+
+  .body-it {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+
+  .pagenum {
+    position: absolute;
+    right: clamp(36px, 3.6vw, 80px);
+    bottom: clamp(36px, 3.8vh, 60px);
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(14px, 0.95vw, 16px);
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    z-index: 9;
+  }
+  .nav-hint {
+    position: fixed;
+    left: clamp(36px, 3.6vw, 80px);
+    bottom: clamp(36px, 3.8vh, 60px);
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(11px, 0.78vw, 13px);
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    opacity: 0.72;
+    z-index: 12;
+    pointer-events: none;
+  }
+  body:has(.s-closing.active) .nav-hint { color: #FAF1E2; }
+
+  .pill {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    padding: clamp(8px, 1vh, 14px) clamp(20px, 2vw, 32px);
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(15px, 1.1vw, 20px);
+    color: var(--ink);
+    line-height: 1;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .pill-divider {
+    color: var(--ink);
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(18px, 1.4vw, 24px);
+    line-height: 1;
+    align-self: center;
+    opacity: 0.7;
+  }
+
+  .ed-badge {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    width: clamp(34px, 2.6vw, 44px);
+    height: clamp(34px, 2.6vw, 44px);
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(15px, 1.05vw, 18px);
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .rect-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: clamp(6px, 0.8vh, 10px) clamp(12px, 1.2vw, 20px);
+    border: 1.5px solid var(--ink);
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(14px, 1vw, 18px);
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  /* SLIDE 1 — COVER */
+  .s-cover { background: var(--paper); }
+  .s-cover .grid {
+    position: absolute;
+    inset: clamp(48px, 5.4vh, 90px) clamp(60px, 5vw, 110px) clamp(80px, 9vh, 140px);
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(30px, 3.5vw, 70px);
+    z-index: 5;
+  }
+  .s-cover .left {
+    display: flex; flex-direction: column;
+    gap: clamp(12px, 1.6vh, 22px);
+    min-height: 0;
+  }
+  .s-cover .ed-row {
+    display: flex; align-items: center; gap: clamp(10px, 1vw, 16px);
+  }
+  .s-cover .ed-row .ed-label {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(18px, 1.4vw, 26px);
+    color: var(--ink);
+    line-height: 1;
+  }
+  .s-cover .title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(54px, min(6.8vw, 11vh), 130px);
+    line-height: 0.92;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+  }
+  .s-cover .actions {
+    display: flex; gap: clamp(8px, 0.8vw, 14px); align-items: center;
+    flex-wrap: wrap;
+  }
+  .s-cover .stats {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(16px, 1.15vw, 21px);
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .s-cover .stats .num {
+    font-style: normal;
+    font-weight: 600;
+  }
+  .s-cover .left .bottom-block {
+    margin-top: auto;
+    display: flex; flex-direction: column;
+    gap: clamp(10px, 1.2vh, 18px);
+    align-items: flex-start;
+  }
+  .s-cover .tagline {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(16px, 1.2vw, 23px);
+    line-height: 1.35;
+    color: var(--ink);
+    max-width: 44ch;
+  }
+  .s-cover .right {
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-end;
+    color: var(--ink);
+    text-align: right;
+  }
+  .s-cover .big-edition {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(140px, min(18vw, 32vh), 380px);
+    line-height: 0.86;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .s-cover .big-edition-lab {
+    margin-top: clamp(6px, 0.8vh, 12px);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(14px, 1vw, 17px);
+    letter-spacing: 0.16em;
+    color: var(--ink);
+  }
+  .s-cover .big-edition-meta {
+    margin-top: clamp(16px, 2vh, 28px);
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(16px, 1.1vw, 20px);
+    line-height: 1.4;
+    color: var(--ink);
+    max-width: 28ch;
+    text-align: right;
+  }
+
+  /* SLIDE 2 — MANIFESTO */
+  .s-manifesto { background: var(--paper); }
+  .s-manifesto .frame {
+    position: absolute;
+    inset: clamp(70px, 8vh, 130px) clamp(70px, 6.5vw, 160px) clamp(90px, 9.5vh, 150px);
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(40px, 4vw, 80px);
+    align-items: center;
+    z-index: 5;
+  }
+  .s-manifesto .left .ed-row {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: clamp(16px, 2vh, 28px);
+  }
+  .s-manifesto .left .ed-row .ed-label {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(16px, 1.2vw, 22px);
+    color: var(--ink);
+  }
+  .s-manifesto .left .h {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(54px, min(6.5vw, 11vh), 130px);
+    line-height: 0.9;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+  }
+  .s-manifesto .right p {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(18px, 1.35vw, 24px);
+    line-height: 1.45;
+    color: var(--ink);
+    margin: 0 0 clamp(12px, 1.4vh, 20px);
+  }
+  .s-manifesto .right p .empha {
+    font-style: normal;
+    font-weight: 600;
+  }
+  .s-manifesto .right .sig {
+    margin-top: clamp(16px, 1.8vh, 26px);
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(15px, 1.1vw, 19px);
+    color: var(--ink);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .s-manifesto .right .sig .who-tag {
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  /* SLIDE 3 — INDEX OF EDITIONS */
+  .s-index { background: var(--paper); }
+  .s-index .frame {
+    position: absolute;
+    inset: clamp(70px, 8vh, 130px) clamp(50px, 4.5vw, 100px) clamp(90px, 9.5vh, 150px);
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: clamp(20px, 2.4vh, 40px);
+    z-index: 5;
+  }
+  .s-index .topbar {
+    display: flex; align-items: end; justify-content: space-between;
+    border-bottom: 1.5px solid var(--ink);
+    padding-bottom: clamp(10px, 1.2vh, 18px);
+    gap: 30px;
+  }
+  .s-index .topbar .h {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(44px, min(5vw, 8.5vh), 96px);
+    line-height: 0.9;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+  }
+  .s-index .topbar .lab-tag {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(14px, 1vw, 17px);
+    color: var(--ink);
+    text-align: right;
+    line-height: 1.4;
+  }
+  .s-index .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(16px, 1.8vw, 30px);
+    align-self: center;
+    align-items: stretch;
+  }
+  .s-index .card {
+    border: 1.5px solid var(--ink);
+    padding: clamp(18px, 1.8vh, 28px) clamp(16px, 1.5vw, 24px);
+    display: flex; flex-direction: column; gap: clamp(8px, 1vh, 14px);
+  }
+  .s-index .card .card-top {
+    display: flex; align-items: center; gap: clamp(8px, 0.8vw, 14px);
+    border-bottom: 1px solid rgba(181, 61, 42, 0.40);
+    padding-bottom: clamp(8px, 1vh, 14px);
+  }
+  .s-index .card .card-top .num-tag {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(14px, 1vw, 17px);
+    color: var(--ink);
+  }
+  .s-index .card .card-top .city-tag {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(14px, 1vw, 17px);
+    color: var(--ink);
+    margin-left: auto;
+  }
+  .s-index .card .nm {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(24px, 2vw, 36px);
+    line-height: 0.95;
+    color: var(--ink);
+    letter-spacing: -0.008em;
+  }
+  .s-index .card .desc {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(14px, 0.95vw, 16px);
+    line-height: 1.45;
+    color: var(--ink);
+    flex: 1;
+  }
+  .s-index .card .meta-row {
+    display: flex; align-items: center; gap: clamp(8px, 0.8vw, 14px);
+    margin-top: auto;
+    border-top: 1px dashed rgba(181, 61, 42, 0.40);
+    padding-top: clamp(8px, 1vh, 14px);
+  }
+  .s-index .card .meta-row .seats-tag,
+  .s-index .card .meta-row .date-tag {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(13px, 0.9vw, 15px);
+    color: var(--ink);
+  }
+  .s-index .card .meta-row .seats-tag { margin-right: auto; }
+
+  /* SLIDE 4 — FEATURED EDITION */
+  .s-featured { background: var(--paper); }
+  .s-featured .frame {
+    position: absolute;
+    inset: clamp(70px, 8vh, 130px) clamp(70px, 6vw, 140px) clamp(110px, 11vh, 180px);
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(36px, 3.5vw, 70px);
+    align-items: center;
+    z-index: 5;
+  }
+  .s-featured .left { display: flex; flex-direction: column; gap: clamp(14px, 1.6vh, 26px); }
+  .s-featured .left .ed-row { display: flex; align-items: center; gap: 14px; }
+  .s-featured .left .ed-row .ed-label {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(16px, 1.2vw, 20px);
+    color: var(--ink);
+  }
+  .s-featured .left .ttl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(48px, min(5.4vw, 9vh), 110px);
+    line-height: 0.9;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+  }
+  .s-featured .left .lede {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(16px, 1.1vw, 20px);
+    line-height: 1.5;
+    color: var(--ink);
+    max-width: 44ch;
+  }
+  .s-featured .left .stats-line {
+    display: flex; gap: clamp(14px, 1.4vw, 24px); align-items: center;
+    flex-wrap: wrap;
+  }
+  .s-featured .right {
+    display: flex; flex-direction: column;
+    justify-content: center;
+    color: var(--ink);
+    border: 1.5px solid var(--ink);
+    padding: clamp(22px, 2.4vw, 42px) clamp(22px, 2vw, 36px);
+    gap: clamp(12px, 1.6vh, 22px);
+  }
+  .s-featured .right .info-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: clamp(16px, 1.6vw, 28px);
+    align-items: baseline;
+    border-bottom: 1px dashed rgba(181, 61, 42, 0.40);
+    padding-bottom: clamp(10px, 1.1vh, 16px);
+  }
+  .s-featured .right .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .s-featured .right .info-row .k {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(13px, 0.9vw, 15px);
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .s-featured .right .info-row .v {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(18px, 1.4vw, 24px);
+    line-height: 1.1;
+    color: var(--ink);
+    text-align: right;
+  }
+  .s-featured .right .info-row .v.it {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: clamp(18px, 1.35vw, 23px);
+  }
+
+  /* SLIDE 5 — MENU / STRUCTURAL PITFALLS */
+  .s-menu { background: var(--paper); }
+  .s-menu .frame {
+    position: absolute;
+    inset: clamp(36px, 4vh, 60px) clamp(80px, 8vw, 180px) clamp(80px, 9vh, 140px);
+    display: flex; flex-direction: column;
+    justify-content: center;
+    gap: clamp(14px, 2vh, 28px);
+    z-index: 5;
+  }
+  .s-menu .top-row {
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center;
+    gap: clamp(6px, 0.8vh, 10px);
+  }
+  .s-menu .top-row .kicker {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(15px, 1.1vw, 19px);
+    color: var(--ink);
+  }
+  .s-menu .top-row .h {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(40px, min(4.2vw, 7vh), 80px);
+    line-height: 0.92;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+  }
+  .s-menu .courses { display: flex; flex-direction: column; gap: 0; }
+  .s-menu .course {
+    display: grid;
+    grid-template-columns: 50px 1fr auto;
+    gap: clamp(12px, 1.2vw, 24px);
+    align-items: center;
+    padding: clamp(10px, 1.2vh, 18px) 0;
+    border-bottom: 1px solid rgba(181, 61, 42, 0.40);
+  }
+  .s-menu .course .num-tag {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(15px, 1.05vw, 18px);
+    color: var(--ink);
+  }
+  .s-menu .course .item { display: flex; flex-direction: column; gap: 2px; }
+  .s-menu .course .item .nm {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(17px, 1.3vw, 23px);
+    line-height: 1.05;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+  }
+  .s-menu .course .item .desc {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(14px, 0.95vw, 16px);
+    line-height: 1.35;
+    color: var(--ink);
+    max-width: 68ch;
+  }
+  .s-menu .course .pair-tag {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(13px, 0.9vw, 15px);
+    color: var(--ink);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* SLIDE 6 — QUOTE / COUNCIL SYNTHESIS */
+  .s-quote { background: var(--paper); }
+  .s-quote .frame {
+    position: absolute;
+    inset: clamp(70px, 8vh, 130px) clamp(80px, 8vw, 200px) clamp(70px, 8vh, 130px);
+    display: flex; flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 5;
+  }
+  .s-quote .right {
+    display: flex; flex-direction: column;
+    gap: clamp(16px, 1.8vh, 28px);
+    align-items: center;
+    width: 100%;
+  }
+  .s-quote .right .kicker {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(16px, 1.2vw, 20px);
+    color: var(--ink);
+  }
+  .s-quote .right .qbody {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(34px, min(3.8vw, 6.2vh), 76px);
+    line-height: 1.02;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+  }
+  .s-quote .right .qbody .it-emph {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: -0.005em;
+  }
+  .s-quote .right .who-row {
+    display: flex; flex-direction: column; gap: 4px;
+    border-top: 1.5px solid var(--ink);
+    padding-top: clamp(10px, 1.2vh, 16px);
+    align-items: center;
+  }
+  .s-quote .right .who-row .who-tag {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(15px, 1.05vw, 18px);
+    color: var(--ink);
+  }
+  .s-quote .right .who-row .meta-tag {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(14px, 0.95vw, 16px);
+    color: var(--ink);
+  }
+
+  /* SLIDE 7 — UPCOMING SCHEDULE / LEDGER */
+  .s-cal { background: var(--paper); }
+  .s-cal .frame {
+    position: absolute;
+    inset: clamp(60px, 7vh, 110px) clamp(50px, 4.5vw, 100px) clamp(80px, 9vh, 140px);
+    display: flex; flex-direction: column;
+    z-index: 5;
+  }
+  .s-cal .topbar {
+    display: flex; align-items: end; justify-content: space-between;
+    border-bottom: 1.5px solid var(--ink);
+    padding-bottom: clamp(10px, 1.2vh, 18px);
+    margin-bottom: clamp(14px, 1.8vh, 24px);
+    gap: 20px;
+  }
+  .s-cal .topbar .h {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(40px, min(4.5vw, 7.5vh), 90px);
+    line-height: 0.9;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+  }
+  .s-cal .topbar .lab-tag {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(14px, 1vw, 17px);
+    color: var(--ink);
+    text-align: right;
+    line-height: 1.4;
+  }
+  .s-cal .ledger { flex: 1; display: flex; flex-direction: column; }
+  .s-cal .row {
+    display: grid;
+    grid-template-columns: 60px 140px 1.4fr 1.1fr auto;
+    gap: clamp(10px, 1.2vw, 22px);
+    align-items: center;
+    padding: clamp(8px, 1vh, 14px) 0;
+    border-bottom: 1px solid rgba(181, 61, 42, 0.40);
+    flex: 1 1 0;
+    min-height: clamp(48px, 5.8vh, 76px);
+  }
+  .s-cal .row.headrow {
+    flex: 0 0 auto;
+    min-height: 0;
+    border-bottom: 1.5px solid var(--ink);
+    padding: 6px 0;
+  }
+  .s-cal .row.headrow > div {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(13px, 0.92vw, 15px);
+    color: var(--ink);
+    letter-spacing: 0.04em;
+  }
+  .s-cal .row .num-tag {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(14px, 1vw, 17px);
+    color: var(--ink);
+  }
+  .s-cal .row .city-tag {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(16px, 1.15vw, 21px);
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .s-cal .row .theme {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(15px, 1.05vw, 19px);
+    color: var(--ink);
+    line-height: 1.25;
+  }
+  .s-cal .row .date-tag {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(14px, 0.95vw, 16px);
+    color: var(--ink);
+  }
+  .s-cal .row .seats-pill {
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(12px, 0.88vw, 15px);
+    color: var(--ink);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* SLIDE 8 — CLOSING */
+  .s-closing {
+    --ink: #FAF1E2;
+    --paper: #B53D2A;
+    background: var(--paper);
+  }
+  .s-closing .frame {
+    position: absolute;
+    left: clamp(60px, 6vw, 140px);
+    right: clamp(60px, 6vw, 140px);
+    top: clamp(70px, 8vh, 130px);
+    bottom: clamp(180px, 20vh, 270px);
+    display: flex; flex-direction: column;
+    justify-content: center;
+    z-index: 5;
+  }
+  .s-closing .left { display: flex; flex-direction: column; gap: clamp(16px, 2vh, 30px); max-width: 62ch; }
+  .s-closing .left .ed-row { display: flex; align-items: center; gap: 14px; }
+  .s-closing .left .ed-row .ed-label {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(16px, 1.2vw, 20px);
+    color: var(--ink);
+  }
+  .s-closing .left .h {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(50px, min(5.8vw, 9.5vh), 115px);
+    line-height: 0.92;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+  }
+  .s-closing .left .desc-it {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(16px, 1.15vw, 21px);
+    line-height: 1.45;
+    color: var(--ink);
+    max-width: 46ch;
+  }
+  .s-closing .left .actions {
+    display: flex; gap: clamp(10px, 1vw, 16px); align-items: center;
+    flex-wrap: wrap;
+  }
+  .s-closing .footer-line {
+    position: absolute;
+    left: clamp(60px, 6vw, 140px);
+    right: clamp(60px, 6vw, 140px);
+    bottom: clamp(80px, 9vh, 130px);
+    display: flex; gap: clamp(30px, 3.5vw, 60px);
+    z-index: 5;
+  }
+  .s-closing .footer-line .colf {
+    border-top: 1px solid var(--ink);
+    padding-top: clamp(6px, 0.8vh, 12px);
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(13px, 0.9vw, 15px);
+    color: var(--ink);
+    line-height: 1.35;
+    flex: 1;
+  }
+  .s-closing .footer-line .colf .ftag {
+    font-style: normal;
+    font-weight: 600;
+    margin-bottom: 2px;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+  <div class="stage">
+
+    <!-- 1. COVER -->
+    <section class="slide s-cover active">
+      <div class="grid">
+        <div class="left">
+          <div class="ed-row">
+            <div class="ed-badge caption">PZ</div>
+            <div class="ed-label caption">Forensic Capital Harness · Subcontractor Due Diligence</div>
+          </div>
+          <h1 class="title">P.Zone × TMGH</h1>
+          <div class="actions">
+            <span class="pill caption">Water &amp; Lagoon MEP</span>
+            <span class="pill-divider caption">|</span>
+            <span class="pill caption">CFO &amp; Investor Pre-Read</span>
+          </div>
+          <div class="stats body-it">
+            <span class="num">EGP 60.5B Effective Debt · 31.25% Cash Conversion</span><br/>
+            Why standard subcontracting terms with TMG create catastrophic working capital risk.
+          </div>
+          <div class="bottom-block">
+            <span class="rect-tag caption">Prepared for Executive Committee · Strategic Audit</span>
+            <p class="tagline">A forensic synthesis blending Construction CFO job costing with Warren Buffett's capital preservation and Sam Altman's asymmetric leverage.</p>
+          </div>
+        </div>
+
+        <div class="right">
+          <div class="big-edition">28.6%</div>
+          <div class="big-edition-lab caption">Effective Interest · Financing Drag</div>
+          <div class="big-edition-meta">DPO stretched to 180–360 days. Zero-interest supplier float funded by subcontractor balance sheets.</div>
+        </div>
+      </div>
+      <div class="pagenum">01 / 08</div>
+    </section>
+
+    <!-- 2. MANIFESTO -->
+    <section class="slide s-manifesto">
+      <div class="frame">
+        <div class="left">
+          <div class="ed-row">
+            <div class="ed-badge caption">·</div>
+            <div class="ed-label caption">The Executive Thesis</div>
+          </div>
+          <h2 class="h">The Asymmetry<br/>of Scale.</h2>
+        </div>
+        <div class="right">
+          <p>Megaprojects like SouthMED (23M sqm) and Noor (5,000 feddans) create an optical illusion of infinite liquidity. But the EGX audited books reveal that <span class="empha">TMG operates with negative net cash (-EGP 13.38B)</span> once sale-and-leaseback notes are consolidated.</p>
+          <p>In high-end water features and lagoons, <span class="empha">60% to 70% of P.Zone's costs are hard-currency MEP imports</span> (pumps, filtration, geomembrane, controls). European vendors demand cash upfront or confirmed LCs. TMG pays with deferred notes payable.</p>
+          <p>Accepting a standard subcontract means P.Zone takes <span class="empha">equity-grade downside risk</span> with utility-grade capped margins. Unless the contract is structurally re-engineered, scale becomes fatal.</p>
+          <div class="sig">
+            <div class="who-tag">The Advisory Council</div>
+            <div>Construction CFO · Buffett Value Lens · Altman Asymmetry · Oct 2026</div>
+          </div>
+        </div>
+      </div>
+      <div class="pagenum">02 / 08</div>
+    </section>
+
+    <!-- 3. INDEX OF EDITIONS / THE 3 PILLARS -->
+    <section class="slide s-index">
+      <div class="frame">
+        <div class="topbar">
+          <div class="h">Three Critical Lenses</div>
+          <div class="lab-tag caption">Strategic Architecture · Risk Governance</div>
+        </div>
+        <div class="grid">
+          <div class="card">
+            <div class="card-top">
+              <div class="num-tag caption">No. 01</div>
+              <div class="city-tag caption">Forensic CFO</div>
+            </div>
+            <div class="nm">Job Costing &amp;<br/>WIP Burn</div>
+            <div class="desc body-it">TMG burned EGP 18.26B in H1 2026 into WIP. Its cash conversion ratio collapsed to 31.25%. Working capital is funded by pushing DPO past 180 days via EGP 15.8B in notes payable.</div>
+            <div class="meta-row">
+              <div class="seats-tag caption">Liquidity Strain</div>
+              <div class="date-tag caption">DPO 180–360d</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <div class="num-tag caption">No. 02</div>
+              <div class="city-tag caption">Buffett Lens</div>
+            </div>
+            <div class="nm">Moat, Float &amp;<br/>Margin of Safety</div>
+            <div class="desc body-it">TMG uses contractors as an involuntary insurance float. Rule No. 1: Never lose money. Never lend to a developer at 0% when bank debt is 28.6% and inflation corrodes uncollateralized receivables.</div>
+            <div class="meta-row">
+              <div class="seats-tag caption">Zero Collateral</div>
+              <div class="date-tag caption">No Margin of Safety</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <div class="num-tag caption">No. 03</div>
+              <div class="city-tag caption">Altman Lens</div>
+            </div>
+            <div class="nm">Frontier Scale &amp;<br/>Leverage</div>
+            <div class="desc body-it">First principles: P.Zone owns rare technical execution in monumental water architecture. If you act as a commodity vendor, you die. Demand structural asymmetry: upfront cash and owner-supplied MEP.</div>
+            <div class="meta-row">
+              <div class="seats-tag caption">Asymmetric Power</div>
+              <div class="date-tag caption">Partner, Not Vendor</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pagenum">03 / 08</div>
+    </section>
+
+    <!-- 4. FEATURED EDITION -->
+    <section class="slide s-featured">
+      <div class="frame">
+        <div class="left">
+          <div class="ed-row">
+            <div class="ed-badge caption">EGX</div>
+            <div class="ed-label caption">Audited Filings · Forensic Reality Check</div>
+          </div>
+          <h2 class="ttl">The 31% Cash<br/>Conversion Trap.</h2>
+          <p class="lede">Accounting profit is an opinion; cash flow is a fact. In H1 2026, TMG posted EGP 9.95B in consolidated accounting profit, but actual operating cash flow was only EGP 3.11B. Here is the balance sheet reality.</p>
+          <div class="stats-line">
+            <span class="pill caption">EGP 460B+ Delivery Backlog</span>
+            <span class="pill caption">EGP 134B Customer Advances</span>
+          </div>
+        </div>
+        <div class="right">
+          <div class="info-row">
+            <div class="k caption">Reported Cash &amp; Bank</div>
+            <div class="v it">EGP 47.11 Billion</div>
+          </div>
+          <div class="info-row">
+            <div class="k caption">Bank Debt + Lease Obligations</div>
+            <div class="v it">EGP 60.49 Billion</div>
+          </div>
+          <div class="info-row">
+            <div class="k caption">Net Cash Position (Deficit)</div>
+            <div class="v it">-EGP 13.38 Billion</div>
+          </div>
+          <div class="info-row">
+            <div class="k caption">Customer Advances Held</div>
+            <div class="v it">EGP 133.99 Billion</div>
+          </div>
+          <div class="info-row">
+            <div class="k caption">Notes Payable (Checks Outstanding)</div>
+            <div class="v">&gt; EGP 15.79 Billion</div>
+          </div>
+        </div>
+      </div>
+      <div class="pagenum">04 / 08</div>
+    </section>
+
+    <!-- 5. STRUCTURAL PITFALLS FOR P.ZONE -->
+    <section class="slide s-menu">
+      <div class="frame">
+        <div class="top-row">
+          <div class="kicker caption">Subcontractor Exposure Analysis</div>
+          <h2 class="h">Five Structural Killers</h2>
+        </div>
+        <div class="courses">
+          <div class="course">
+            <div class="num-tag caption">i.</div>
+            <div class="item">
+              <div class="nm">Foreign Currency &amp; Import Mismatch</div>
+              <div class="desc body-it">Specialty pumps, filtration skids, PLC automations, and liner membranes must be bought in EUR/USD cash. Fixed-price EGP subcontracts lead to instant margin death upon currency fluctuation.</div>
+            </div>
+            <div class="pair-tag caption">60–70% FX Share</div>
+          </div>
+          <div class="course">
+            <div class="num-tag caption">ii.</div>
+            <div class="item">
+              <div class="nm">The Deferred Notes Payable Trap</div>
+              <div class="desc body-it">Subcontractors are routinely paid in post-dated checks (6 to 18 months). Discounting these checks at Egyptian banks costs 28.6% annually, completely wiping out net operating margins.</div>
+            </div>
+            <div class="pair-tag caption">DPO &gt; 180 Days</div>
+          </div>
+          <div class="course">
+            <div class="num-tag caption">iii.</div>
+            <div class="item">
+              <div class="nm">The Captive General Contractor Layer</div>
+              <div class="desc body-it">P.Zone will not contract directly with TMGH, but with ACC (100% TM family) or tier-1s (Concrete Plus, Atrium). 'Pay-When-Paid' clauses freeze subcontractor funds during developer disputes.</div>
+            </div>
+            <div class="pair-tag caption">Pay-When-Paid Risk</div>
+          </div>
+          <div class="course">
+            <div class="num-tag caption">iv.</div>
+            <div class="item">
+              <div class="nm">Civil Work Delays &amp; Prolongation Costs</div>
+              <div class="desc body-it">Lakes and pools require finished earthworks, deep excavation, and structural concrete. When main contractors delay civil milestones, P.Zone's overhead and mobilized teams bleed without compensation.</div>
+            </div>
+            <div class="pair-tag caption">Schedule Drift</div>
+          </div>
+          <div class="course">
+            <div class="num-tag caption">v.</div>
+            <div class="item">
+              <div class="nm">Retention Snagging &amp; Hydrostatic Testing</div>
+              <div class="desc body-it">The 5% to 10% defects liability retention is easily withheld for years under minor water-tightness or landscaping snag list objections, serving as involuntary developer working capital.</div>
+            </div>
+            <div class="pair-tag caption">5–10% Retention</div>
+          </div>
+        </div>
+      </div>
+      <div class="pagenum">05 / 08</div>
+    </section>
+
+    <!-- 6. COUNCIL QUOTE -->
+    <section class="slide s-quote">
+      <div class="frame">
+        <div class="right">
+          <div class="kicker caption">The Synthesis of Buffett &amp; Altman</div>
+          <p class="qbody">"You never lend at zero percent to a developer borrowing at twenty-eight. <span class="it-emph">If you hold the technical moat, demand upfront capital or walk away.</span>"</p>
+          <div class="who-row">
+            <div class="who-tag">Warren Buffett &amp; Sam Altman</div>
+            <div class="meta-tag caption">First Principles of Capital Allocation &amp; Asymmetric Leverage · 2026</div>
+          </div>
+        </div>
+      </div>
+      <div class="pagenum">06 / 08</div>
+    </section>
+
+    <!-- 7. UPCOMING SCHEDULE / LEDGER -->
+    <section class="slide s-cal">
+      <div class="frame">
+        <div class="topbar">
+          <div class="h">Project Risk Ledger</div>
+          <div class="lab-tag caption">Package Assessment &amp; Contractual Shield</div>
+        </div>
+        <div class="ledger">
+          <div class="row headrow">
+            <div class="caption">No.</div>
+            <div class="caption">Project</div>
+            <div class="caption">MEP Package &amp; Engineering Nature</div>
+            <div class="caption">Core Risk</div>
+            <div class="caption">Mandatory Shield</div>
+          </div>
+          <div class="row">
+            <div class="num-tag caption">01</div>
+            <div class="city-tag">SouthMED</div>
+            <div class="theme">Mega Crystal Lagoons &amp; Marina Water Features</div>
+            <div class="date-tag caption">High FX &amp; Scale Exposure</div>
+            <div><span class="seats-pill caption">Direct Owner L/C</span></div>
+          </div>
+          <div class="row">
+            <div class="num-tag caption">02</div>
+            <div class="city-tag">Noor City</div>
+            <div class="theme">Community Pools &amp; Central Water Features</div>
+            <div class="date-tag caption">Fixed-Price Inflation Trap</div>
+            <div><span class="seats-pill caption">CAPMAS Indexation</span></div>
+          </div>
+          <div class="row">
+            <div class="num-tag caption">03</div>
+            <div class="city-tag">Luxor 4S</div>
+            <div class="theme">Luxury Hotel Pools &amp; Heritage Landscape Fountains</div>
+            <div class="date-tag caption">Strict Snagging / Hill Retention</div>
+            <div><span class="seats-pill caption">Milestone Sign-Off</span></div>
+          </div>
+          <div class="row">
+            <div class="num-tag caption">04</div>
+            <div class="city-tag">Celia NAC</div>
+            <div class="theme">Park Water Streams &amp; Interactive Fountains</div>
+            <div class="date-tag caption">Downstream Payment Freeze</div>
+            <div><span class="seats-pill caption">Strike Pay-When-Paid</span></div>
+          </div>
+          <div class="row">
+            <div class="num-tag caption">05</div>
+            <div class="city-tag">Madinaty</div>
+            <div class="theme">Clubhouse Pools &amp; Golf Lake Remediation</div>
+            <div class="date-tag caption">Maintenance Fund Legal Disputes</div>
+            <div><span class="seats-pill caption">30-Day Cash Stop-Work</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pagenum">07 / 08</div>
+    </section>
+
+    <!-- 8. CLOSING / THE MOVE WE RECOMMEND -->
+    <section class="slide s-closing">
+      <div class="frame">
+        <div class="left">
+          <div class="ed-row">
+            <div class="ed-badge caption">·</div>
+            <div class="ed-label caption">The Recommended Decision</div>
+          </div>
+          <h2 class="h">The Non-Negotiable<br/>Term Sheet.</h2>
+          <p class="desc-it">Do not enter TMG projects under standard subcontractor agreements. Enter only as a critical MEP engineering partner with a 25% cash advance, an FX pass-through clause, direct owner letters of credit, and a complete waiver of 'Pay-When-Paid'. Otherwise, walking away preserves enterprise equity.</p>
+          <div class="actions">
+            <a class="pill caption" href="javascript:void(0)" onclick="alert('Contractual Shield Active: Reviewing P.ZONE Protection Clauses')" style="text-decoration:none;color:inherit;">Adopt Term Sheet</a>
+            <a class="pill caption" href="javascript:void(0)" onclick="window.print()" style="text-decoration:none;color:inherit;">Export PDF Deck</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-line">
+        <div class="colf">
+          <span class="ftag caption">Governance</span>
+          Construction CFO Forensic Framework · EGX Filings FY21–H1 26.
+        </div>
+        <div class="colf">
+          <span class="ftag caption">Typography</span>
+          Set in Bricolage Grotesque &amp; Fraunces · Terracotta &amp; Cream Paper.
+        </div>
+        <div class="colf">
+          <span class="ftag caption">Audit Version</span>
+          PZONE-TMGH-STRATEGIC-DECK-v2.0 · Confidential Strategic Assessment.
+        </div>
+      </div>
+
+      <div class="pagenum">08 / 08</div>
+    </section>
+
+  </div>
+</div>
+
+<div class="caption nav-hint">← / → · Space to navigate</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let current = 0;
+  function show(i) {
+    if (i < 0) i = 0;
+    if (i > slides.length - 1) i = slides.length - 1;
+    slides[current].classList.remove('active');
+    slides[i].classList.add('active');
+    current = i;
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); show(current + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp')               { e.preventDefault(); show(current - 1); }
+    else if (e.key === 'Home')                                            { e.preventDefault(); show(0); }
+    else if (e.key === 'End')                                             { e.preventDefault(); show(slides.length - 1); }
+  });
+  let tx = null;
+  document.addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (tx == null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) show(current + (dx < 0 ? 1 : -1));
+    tx = null;
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMG Holding: Forensic Supply Chain & Contractor Risk Investigation</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-emerald: #10b981;
+            --accent-indigo: #6366f1;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header & Meta */
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+        }
+
+        .badge-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--accent-amber);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-danger {
+            background-color: rgba(244, 63, 94, 0.1);
+            color: var(--accent-rose);
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 900px;
+        }
+
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--primary);
+        }
+
+        .kpi-card.amber::before { background-color: var(--accent-amber); }
+        .kpi-card.rose::before { background-color: var(--accent-rose); }
+        .kpi-card.emerald::before { background-color: var(--accent-emerald); }
+
+        .kpi-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .kpi-value {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .kpi-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Charts Layout */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            margin-bottom: 36px;
+        }
+
+        .chart-box {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-box.col-12 { grid-column: span 12; }
+        .chart-box.col-8 { grid-column: span 8; }
+        .chart-box.col-6 { grid-column: span 6; }
+        .chart-box.col-4 { grid-column: span 4; }
+
+        @media (max-width: 1024px) {
+            .chart-box.col-8, .chart-box.col-6, .chart-box.col-4 {
+                grid-column: span 12;
+            }
+        }
+
+        .chart-header {
+            margin-bottom: 16px;
+        }
+
+        .chart-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chart-tag {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #334155;
+            color: var(--primary);
+        }
+
+        .chart-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .canvas-container {
+            position: relative;
+            flex-grow: 1;
+            min-height: 320px;
+            max-height: 400px;
+            width: 100%;
+        }
+
+        /* Narrative & Tables Section */
+        .section-header {
+            margin: 40px 0 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 32px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: #172033;
+            color: var(--primary);
+            font-weight: 600;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #243049;
+        }
+
+        .risk-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
+
+        .risk-low { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .risk-med { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .risk-high { background: rgba(244, 63, 94, 0.2); color: #f87171; }
+        .risk-crit { background: rgba(239, 68, 68, 0.3); color: #fca5a5; font-weight: 700; }
+
+        /* Findings Block */
+        .analysis-block {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .analysis-block h3 {
+            font-size: 1.15rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .analysis-block p {
+            color: #cbd5e1;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .analysis-block ul {
+            padding-left: 20px;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .analysis-block li {
+            margin-bottom: 6px;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <header>
+        <div class="badge-bar">
+            <span class="badge">Forensic Intelligence Dossier</span>
+            <span class="badge badge-warning">Tier-Insulation Protocol</span>
+            <span class="badge">Jurisdiction: Egypt (EGX: TMGH)</span>
+            <span class="badge badge-danger">High Payables Aging</span>
+        </div>
+        <h1>Talaat Moustafa Group Holding (TMG)</h1>
+        <p class="subtitle">
+            Forensic Due Diligence, Subcontractor Supply Chain Privity, Interim Payment Certificate (المستخلصات) Architecture, and Commercial Dispute Audit.
+        </p>
+    </header>
+
+    <!-- KPI Section -->
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-title">Listed Issued Capital</div>
+            <div class="kpi-value">EGP 20.64B</div>
+            <div class="kpi-desc">EGX: TMGH.CA (2.063B shares at EGP 10 par)</div>
+        </div>
+        <div class="kpi-card amber">
+            <div class="kpi-title">Creditors & Notes Payable Shift</div>
+            <div class="kpi-value">EGP 15.79B</div>
+            <div class="kpi-desc">Working capital absorption via deferred paper (أوراق دفع)</div>
+        </div>
+        <div class="kpi-card emerald">
+            <div class="kpi-title">Active Land Concessions</div>
+            <div class="kpi-value">> 40,000 Feddans</div>
+            <div class="kpi-desc">Madinaty, Noor, SouthMED, Celia, Al Rehab</div>
+        </div>
+        <div class="kpi-card rose">
+            <div class="kpi-title">Subcontractor Privity</div>
+            <div class="kpi-value">Insulated (ACC)</div>
+            <div class="kpi-desc">Alexandria Construction Co. buffers TMG Holding</div>
+        </div>
+    </section>
+
+    <!-- Master Charts Grid -->
+    <section class="charts-grid">
+
+        <!-- Chart 1: Bar Chart (Landbank & Project Scale) -->
+        <div class="chart-box col-6">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <span>1. Landbank Footprint by Development</span>
+                    <span class="chart-tag">Vertical Bar Chart</span>
+                </div>
+                <div class="chart-subtitle">Direct development scale across primary Egyptian mega-projects (Feddans)</div>
+            </div>
+            <div class="canvas-container">
+                <canvas id="landbankBarChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 2: Horizontal Bar Chart (Financial Facilities & Payables) -->
+        <div class="chart-box col-6">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <span>2. Commercial Debt, Liabilities & Credit Lines</span>
+                    <span class="chart-tag">Horizontal Bar Chart</span>
+                </div>
+                <div class="chart-subtitle">Disclosed banking facilities, asset liquidations, and trade payables (EGP Billions)</div>
+            </div>
+            <div class="canvas-container">
+                <canvas id="liabilitiesHBarChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 3: Multi-Stage Line Chart (Payment Certificate Aging Timeline) -->
+        <div class="chart-box col-8">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <span>3. Interim Payment Certificate (المستخلص) Lifecycle & Realization Drag</span>
+                    <span class="chart-tag">Multi-Stage Line Chart</span>
+                </div>
+                <div class="chart-subtitle">Cumulative days elapsed across physical quantity measurement, administrative audit, and notes maturity</div>
+            </div>
+            <div class="canvas-container">
+                <canvas id="ipcLifecycleLineChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 4: Doughnut Chart (Ownership / UBO Structure) -->
+        <div class="chart-box col-4">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <span>4. Shareholding & UBO Structure</span>
+                    <span class="chart-tag">Doughnut Chart</span>
+                </div>
+                <div class="chart-subtitle">Equity distribution of TMG Holding SAE under verified EGX/FRA filings</div>
+            </div>
+            <div class="canvas-container">
+                <canvas id="ownershipDoughnutChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 5: Radar Chart (Forensic Counterparty Risk Matrix) -->
+        <div class="chart-box col-4">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <span>5. Subcontractor Risk Dimensions</span>
+                    <span class="chart-tag">Radar Chart</span>
+                </div>
+                <div class="chart-subtitle">Evaluated risk exposure scores (1-10 Scale) for downstream trade packages</div>
+            </div>
+            <div class="canvas-container">
+                <canvas id="riskRadarChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 6: Polar Area Chart (Evidentiary Confidence Breakdown) -->
+        <div class="chart-box col-4">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <span>6. Evidentiary Distribution of Claims</span>
+                    <span class="chart-tag">Polar Area Chart</span>
+                </div>
+                <div class="chart-subtitle">Categorization of sourced intelligence across regulatory, legal, and field leads</div>
+            </div>
+            <div class="canvas-container">
+                <canvas id="evidencePolarChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 7: Bubble Chart (Counterparty Risk vs Public Dispute Visibility) -->
+        <div class="chart-box col-4">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <span>7. Counterparty Exposure vs Dispute Visibility</span>
+                    <span class="chart-tag">Bubble Chart</span>
+                </div>
+                <div class="chart-subtitle">X: Contract Scale | Y: Public Friction Visibility | Bubble Size: Estimated Package Volume</div>
+            </div>
+            <div class="canvas-container">
+                <canvas id="disputeBubbleChart"></canvas>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Forensic Investigative Findings -->
+    <div class="section-header">
+        <h2 class="section-title">Core Investigative Syntheses & Technical Findings</h2>
+    </div>
+
+    <div class="analysis-block">
+        <h3>1. The Captive EPC Model & Contractual Tier Shielding</h3>
+        <p>
+            TMG Holding does not execute whole-project construction contracts directly with independent general contractors (e.g., Orascom, Arab Contractors, or Hassan Allam). Instead, works are funnelled through its captive contractor, <strong>Alexandria Construction Company SAE (ACC)</strong>, or specialized turnkey vehicles like Atrium Quality Contractors.
+        </p>
+        <p>
+            This structure legally insulates TMG Holding:
+        </p>
+        <ul>
+            <li>Trade subcontractors in electrical, mechanical, plumbing, and structural trades hold privity strictly with ACC or Tier-1 contractors, preventing direct enforcement or bank account garnishments against TMG Holding or Arab Company for Projects & Urban Development.</li>
+            <li>Parent guarantee instruments are typically absent; contractual liability terminates at the subsidiary level.</li>
+        </ul>
+    </div>
+
+    <div class="analysis-block">
+        <h3>2. The Interim Payment Certificate (المستخلصات) Gatekeeping Bottleneck</h3>
+        <p>
+            Consolidated financial notes disclose that project construction costs are recognized and capitalized strictly against approved payment certificates (*مستخلصات معتمدة*). Field investigation confirms dedicated technical teams at Madinaty Headquarters review and audit incoming contractor logs before financial signoff.
+        </p>
+        <ul>
+            <li><strong>Measurement Re-audits:</strong> Routine disputes over site quantities and variations defer certificate approval without putting the developer in legal default under Egyptian Civil Code rules.</li>
+            <li><strong>Commercial Paper Settlement:</strong> Upon approval, payments are frequently issued via commercial notes payable (*أوراق دفع*) with tenors stretching 90 to 270 days, transferring working capital costs downstream.</li>
+        </ul>
+    </div>
+
+    <!-- Master Database Table -->
+    <div class="section-header">
+        <h2 class="section-title">Master Subcontractor, Supplier & Dispute Database</h2>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>TMG Legal Entity</th>
+                    <th>Direct Counterparty</th>
+                    <th>Specialist / Subcontractor</th>
+                    <th>Scope of Work</th>
+                    <th>Contract Tier</th>
+                    <th>Disclosed Value / Liability</th>
+                    <th>Documented Issue</th>
+                    <th>Evidence Strength</th>
+                    <th>Risk Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Madinaty</strong> (New Cairo)</td>
+                    <td>Arab Co. for Projects & Urban Dev.</td>
+                    <td>Alexandria Construction Co.</td>
+                    <td>In-House Trade Units & Sub-trades</td>
+                    <td>Civil structures, 120,000 units</td>
+                    <td>Direct with Captive GC</td>
+                    <td>Multi-Billion EGP</td>
+                    <td>Delayed certificate audits, notes payable tenors</td>
+                    <td>Level A</td>
+                    <td><span class="risk-pill risk-med">Medium</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Celia</strong> (New Capital)</td>
+                    <td>Arab Co. for Projects & Urban Dev.</td>
+                    <td>Atrium Quality Contractors</td>
+                    <td>Al Majd Contracting</td>
+                    <td>Full Electromechanical (MEP)</td>
+                    <td>Indirect (Under Atrium)</td>
+                    <td>Unverified (Package basis)</td>
+                    <td>Back-to-back conditional certification terms</td>
+                    <td>Level B</td>
+                    <td><span class="risk-pill risk-med">Medium</span></td>
+                </tr>
+                <tr>
+                    <td><strong>SouthMED</strong> (North Coast)</td>
+                    <td>TMG Coastal Development SPVs</td>
+                    <td>Direct Award / JV</td>
+                    <td>Concrete Plus for Contracting</td>
+                    <td>179 Buildings + Infrastructure (C01)</td>
+                    <td>Direct Tier-1 Main Award</td>
+                    <td>~EGP 10.0 Billion</td>
+                    <td>Substantial working capital exposure, execution pacing</td>
+                    <td>Level B</td>
+                    <td><span class="risk-pill risk-low">Low-Med</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Noor City</strong> (Capital Gardens)</td>
+                    <td>Arab Co. for Urban Investment</td>
+                    <td>Alexandria Construction Co.</td>
+                    <td>Saveto Egypt</td>
+                    <td>Dry mix mortars, coatings, thermal systems</td>
+                    <td>Direct Vendor Agreement</td>
+                    <td>Commercial Supply Agreement</td>
+                    <td>Supply chain credit extension (90-120 days)</td>
+                    <td>Level B</td>
+                    <td><span class="risk-pill risk-low">Low</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Madinaty Operations</strong></td>
+                    <td>Arab Co. for Projects & Urban Dev.</td>
+                    <td>Alexandria Construction Co.</td>
+                    <td>Site Security & Operational Labor</td>
+                    <td>Site guarding, logistics, physical security</td>
+                    <td>Direct Operational Labor</td>
+                    <td>Recurring Monthly Payroll</td>
+                    <td>Protests over unpaid overtime, allowances, shift lengths</td>
+                    <td>Level B</td>
+                    <td><span class="risk-pill risk-high">High</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Four Seasons Madinaty</strong></td>
+                    <td>Madinaty Co. for Tourism Projects</td>
+                    <td>Alexandria Construction Co. / GC</td>
+                    <td>Specialist Hospitality Turnkey MEP</td>
+                    <td>Luxury hospitality fit-out & systems</td>
+                    <td>Direct Subsidiary Contract</td>
+                    <td>EGP 6.76B Syndicated Facility</td>
+                    <td>Stringent bank engineering inspection prior to drawdowns</td>
+                    <td>Level A</td>
+                    <td><span class="risk-pill risk-low">Low</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Madinaty Land Concession</strong></td>
+                    <td>Arab Co. for Projects & Urban Dev.</td>
+                    <td>New Urban Communities Authority</td>
+                    <td>N/A (Master Concession)</td>
+                    <td>8,000 feddan public land allocation</td>
+                    <td>Direct State Allocation</td>
+                    <td>7% Total Built-Up Area</td>
+                    <td>State Council annulment for lack of auction (Resolved)</td>
+                    <td>Level A</td>
+                    <td><span class="risk-pill risk-crit">Critical (Historic)</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Recommendations Section -->
+    <div class="analysis-block" style="border-left: 4px solid var(--accent-emerald);">
+        <h3>Actionable Due Diligence Protocols for Prospective Subcontractors</h3>
+        <ul>
+            <li><strong>Privity Check:</strong> Confirm whether the contract is signed by TMG Holding or an operational subsidiary. Trade packages signed with Alexandria Construction Company cannot enforce claims against TMG Holding.</li>
+            <li><strong>Refuse Pure Pay-When-Paid Terms:</strong> Require milestone payment windows rather than terms tied entirely to upstream developer disbursements.</li>
+            <li><strong>Commercial Notes Ceilings:</strong> Establish clear limits on post-dated commercial paper (*أوراق دفع*), with maturities capped at 60 to 90 days.</li>
+            <li><strong>Material Escalation Clauses:</strong> Tie input cost adjustments directly to Ministry of Housing price bulletins to protect against currency devaluations.</li>
+        </ul>
+    </div>
+
+    <footer>
+        TMG Holding Forensic Supply Chain & Contractor Risk Investigation | Built for Due Diligence Review | Data Source: EGX, FRA, Judicial Court Records, Technical Portfolios.
+    </footer>
+
+</div>
+
+<!-- Chart Scripts Initialization -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        // Common Options
+        const defaultFont = { family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 11 };
+        const gridColor = '#334155';
+        const tickColor = '#94a3b8';
+
+        // 1. Vertical Bar Chart (Landbank)
+        new Chart(document.getElementById('landbankBarChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Madinaty', 'SouthMED', 'Noor City', 'Al Rehab', 'Celia (NAC)', 'Al Rabwa'],
+                datasets: [{
+                    label: 'Land Area (Feddans)',
+                    data: [8000, 5500, 5000, 2380, 500, 500],
+                    backgroundColor: [
+                        '#38bdf8', '#0ea5e9', '#6366f1', '#818cf8', '#f59e0b', '#10b981'
+                    ],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y.toLocaleString()} Feddans` } }
+                },
+                scales: {
+                    x: { ticks: { color: tickColor, font: defaultFont }, grid: { display: false } },
+                    y: { ticks: { color: tickColor, font: defaultFont }, grid: { color: gridColor } }
+                }
+            }
+        });
+
+        // 2. Horizontal Bar Chart (Liabilities & Facilities)
+        new Chart(document.getElementById('liabilitiesHBarChart'), {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Creditors & Notes Payable Shift',
+                    'Noor Project Bank Consortium',
+                    'Rawasy Asset Sale (Tranche 1)',
+                    'Four Seasons Madinaty Facility',
+                    'Rawasy Asset Sale (Tranche 2)',
+                    'Misr RE Fund 1 Contribution'
+                ],
+                datasets: [{
+                    label: 'Value (EGP Billions)',
+                    data: [15.79, 9.00, 8.50, 6.76, 3.40, 0.50],
+                    backgroundColor: '#f59e0b',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => ` EGP ${ctx.parsed.x.toFixed(2)} Billion` } }
+                },
+                scales: {
+                    x: { ticks: { color: tickColor, font: defaultFont }, grid: { color: gridColor } },
+                    y: { ticks: { color: tickColor, font: defaultFont }, grid: { display: false } }
+                }
+            }
+        });
+
+        // 3. Multi-Stage Line Chart (Payment Lifecycle Timeline)
+        new Chart(document.getElementById('ipcLifecycleLineChart'), {
+            type: 'line',
+            data: {
+                labels: [
+                    'Submission',
+                    'Site Quantity Survey',
+                    'ACC Technical Office',
+                    'Madinaty HQ Audit',
+                    'Certificate Approved',
+                    'Note Issued (PDC)',
+                    'Final Cash Clearance'
+                ],
+                datasets: [{
+                    label: 'Standard Contractual Timeline',
+                    data: [0, 15, 30, 45, 60, 75, 90],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.2
+                }, {
+                    label: 'Observed Extended Processing Timeline',
+                    data: [0, 25, 60, 105, 135, 180, 270],
+                    borderColor: '#f43f5e',
+                    backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: tickColor, font: defaultFont } },
+                    tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: Day ${ctx.parsed.y}` } }
+                },
+                scales: {
+                    x: { ticks: { color: tickColor, font: defaultFont }, grid: { color: gridColor } },
+                    y: { title: { display: true, text: 'Cumulative Days', color: tickColor }, ticks: { color: tickColor, font: defaultFont }, grid: { color: gridColor } }
+                }
+            }
+        });
+
+        // 4. Doughnut Chart (Ownership / UBO Structure)
+        new Chart(document.getElementById('ownershipDoughnutChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Talaat Moustafa Family', 'EGX Free Float', 'Norges Bank (Norway)', 'Other Strategic Entities'],
+                datasets: [{
+                    data: [59.8, 32.9, 3.3, 4.0],
+                    backgroundColor: ['#38bdf8', '#6366f1', '#10b981', '#f59e0b'],
+                    borderColor: '#1e293b',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: tickColor, font: defaultFont } },
+                    tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` } }
+                }
+            }
+        });
+
+        // 5. Radar Chart (Risk Dimensions)
+        new Chart(document.getElementById('riskRadarChart'), {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Payment Delay',
+                    'Tier Privity Insulation',
+                    'Dispute Forum Barrier',
+                    'Inflation & Price Escalation',
+                    'Retention Lag',
+                    'Labor Cash Friction'
+                ],
+                datasets: [{
+                    label: 'Assessed Risk Score (1-10)',
+                    data: [8.5, 9.5, 8.8, 8.2, 7.8, 7.0],
+                    backgroundColor: 'rgba(244, 63, 94, 0.2)',
+                    borderColor: '#f43f5e',
+                    pointBackgroundColor: '#f43f5e',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: gridColor },
+                        grid: { color: gridColor },
+                        pointLabels: { color: tickColor, font: defaultFont },
+                        ticks: { display: false, min: 0, max: 10 }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // 6. Polar Area Chart (Evidence Strength)
+        new Chart(document.getElementById('evidencePolarChart'), {
+            type: 'polarArea',
+            data: {
+                labels: [
+                    'Level A (Official / Court / FRA)',
+                    'Level B (Verified Technical Portfolios)',
+                    'Level C (Company Marketing Claims)',
+                    'Level D (Labor / Site Friction Leads)'
+                ],
+                datasets: [{
+                    data: [35, 45, 15, 5],
+                    backgroundColor: [
+                        'rgba(56, 189, 248, 0.7)',
+                        'rgba(99, 102, 241, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(244, 63, 94, 0.7)'
+                    ],
+                    borderColor: '#1e293b'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        grid: { color: gridColor },
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: tickColor, font: defaultFont } }
+                }
+            }
+        });
+
+        // 7. Bubble Chart (Counterparty Risk vs Public Dispute Visibility)
+        new Chart(document.getElementById('disputeBubbleChart'), {
+            type: 'bubble',
+            data: {
+                datasets: [
+                    {
+                        label: 'Concrete Plus (SouthMED EPC)',
+                        data: [{ x: 10.0, y: 1.5, r: 24 }],
+                        backgroundColor: 'rgba(56, 189, 248, 0.7)'
+                    },
+                    {
+                        label: 'Atrium Quality Contractors (Turnkey)',
+                        data: [{ x: 4.5, y: 1.8, r: 16 }],
+                        backgroundColor: 'rgba(99, 102, 241, 0.7)'
+                    },
+                    {
+                        label: 'ACC Site Security & Labor Force',
+                        data: [{ x: 1.2, y: 8.5, r: 15 }],
+                        backgroundColor: 'rgba(244, 63, 94, 0.8)'
+                    },
+                    {
+                        label: 'Al Majd (Celia MEP Subcontractor)',
+                        data: [{ x: 0.8, y: 1.2, r: 10 }],
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)'
+                    },
+                    {
+                        label: 'Saveto Egypt (Materials Supplier)',
+                        data: [{ x: 0.9, y: 1.0, r: 10 }],
+                        backgroundColor: 'rgba(245, 158, 11, 0.7)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: tickColor, font: defaultFont } },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` ${ctx.dataset.label}: Scale ~EGP ${ctx.parsed.x}B, Friction Index: ${ctx.parsed.y}/10`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Estimated Scope / Facility (EGP Billions)', color: tickColor },
+                        ticks: { color: tickColor, font: defaultFont },
+                        grid: { color: gridColor }
+                    },
+                    y: {
+                        title: { display: true, text: 'Public Dispute Friction Index (1-10)', color: tickColor },
+                        ticks: { color: tickColor, font: defaultFont },
+                        grid: { color: gridColor },
+                        min: 0,
+                        max: 10
+                    }
+                }
+            }
+        });
+
+    });
+</script>
+
+</body>
+</html>

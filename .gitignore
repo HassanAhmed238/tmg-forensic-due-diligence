@@ -1,0 +1,17 @@
+# Environment & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+test_screenshots/
+
+# System & OS
+Thumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Temporary outputs
+*.tmp
+codex_review_output.txt
+brief_codex_review.txt

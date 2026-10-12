@@ -1,0 +1,23 @@
+id="tab-sentiment" class="tab-pane">
+        <div class="pbi-card">
+          <div class="pbi-card-header">
+            <div>
+              <div class="pbi-card-title" id="t-sent-table-title">سجل الشكاوى التفصيلي: المقاولون، عمال المقاولات، واتحادات السكان</div>
+              <div class="pbi-card-subtitle" id="t-sent-table-sub">يتضمن واقعة مقاول مدينتي التاريخية، احتجاجات عمال الإسكندرية للإنشاءات، وبلاغات الملاك</div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr id="complaints-th-row">
+                  <!-- Populated via JS -->
+                </tr>
+              </thead>
+              <tbody id="complaints-tbody">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
