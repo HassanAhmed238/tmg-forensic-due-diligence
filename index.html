@@ -556,6 +556,283 @@
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
 
+    /* ==========================================================================
+       MOBILE RESPONSIVENESS & TOUCH CONTROLS ENGINE
+       ========================================================================== */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 45;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .sidebar-backdrop.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .btn-hamburger {
+      display: none;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      width: 40px;
+      height: 40px;
+      border-radius: 9px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .btn-hamburger:hover {
+      background: var(--accent-cyan);
+      color: #fff;
+      border-color: var(--accent-cyan);
+    }
+
+    .btn-close-sidebar {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 26px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 4px;
+    }
+
+    
+    .desktop-only { display: inline-flex; }
+    
+    @media (max-width: 768px) {
+      .desktop-only { display: none !important; }
+      .excel-lbl-full { display: none !important; }
+      .excel-lbl-short { display: inline !important; }
+
+      .topbar {
+        padding: 8px 12px !important;
+        gap: 8px !important;
+      }
+
+      .topbar-actions {
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 6px !important;
+      }
+
+      .search-box {
+        order: 2;
+        width: 100% !important;
+        margin-top: 4px;
+      }
+      .search-box input {
+        width: 100% !important;
+        height: 34px !important;
+      }
+
+      .ctrl-group {
+        padding: 2px !important;
+      }
+      .ctrl-pill {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+      }
+
+      /* GIS Map touch friendliness */
+      #tmg-gis-map {
+        height: 360px !important;
+        touch-action: pan-x pan-y !important;
+      }
+      
+      /* Make tables easily swipeable with nice gradient fade indicator */
+      .table-container {
+        position: relative;
+        max-width: 100%;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+
+      /* Make sure inputs don't zoom on iOS */
+      input[type="text"], input[type="search"] {
+        font-size: 16px !important;
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .grid-2, .grid-3, .grid-2-1 { grid-template-columns: 1fr; }
+      
+      .btn-hamburger { display: inline-flex; }
+      .btn-close-sidebar { display: block; }
+      
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 300px;
+        max-width: 85vw;
+        height: 100vh;
+        z-index: 50;
+        transform: translateX(-100%);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.6);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      
+      html[dir="rtl"] .sidebar {
+        left: auto;
+        right: 0;
+        transform: translateX(100%);
+      }
+      
+      .sidebar.mobile-open {
+        transform: translateX(0) !important;
+      }
+      
+      .main-wrapper {
+        width: 100%;
+        max-width: 100vw;
+      }
+
+      .topbar {
+        padding: 0 16px;
+        gap: 10px;
+      }
+
+      .page-title {
+        font-size: 14.5px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .topbar {
+        height: auto;
+        min-height: 58px;
+        padding: 8px 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .page-title {
+        font-size: 13.5px;
+        gap: 6px;
+      }
+
+      .badge-status {
+        display: none; /* Hide on mobile to save precious header space */
+      }
+
+      .topbar-actions {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 140px;
+      }
+      .search-box input {
+        width: 100%;
+        padding: 6px 28px 6px 10px;
+        font-size: 11.5px;
+      }
+      html[dir="rtl"] .search-box input {
+        padding: 6px 10px 6px 28px;
+      }
+      .search-box input:focus {
+        width: 100%;
+      }
+
+      .btn-action {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+
+      .content-area {
+        padding: 14px 10px;
+        gap: 16px;
+      }
+
+      .card {
+        padding: 15px 12px;
+        border-radius: 11px;
+      }
+
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+      }
+
+      .kpi-card {
+        padding: 12px 10px !important;
+      }
+
+      .kpi-title {
+        font-size: 10.5px !important;
+      }
+
+      .kpi-value {
+        font-size: 18px !important;
+      }
+
+      .chart-box {
+        height: 240px !important;
+      }
+
+      #tmg-gis-map {
+        height: 380px !important;
+      }
+
+      .modal-box {
+        width: 96% !important;
+        max-width: 96vw !important;
+        padding: 16px 12px !important;
+        max-height: 92vh !important;
+        border-radius: 12px !important;
+      }
+
+      .table-container {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      th, td {
+        padding: 9px 8px;
+        font-size: 11px;
+      }
+
+      #bs-year-selector {
+        flex-wrap: wrap;
+      }
+      #bs-year-selector button {
+        padding: 4px 7px;
+        font-size: 10.5px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .kpi-grid {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .btn-action.hide-xs {
+        display: none !important;
+      }
+    }
+
     @media (max-width: 1080px) {
       .grid-2, .grid-3, .grid-2-1 { grid-template-columns: 1fr; }
       .sidebar { position: fixed; transform: translateX(-100%); }
@@ -903,17 +1180,22 @@
 
 </head>
 <body>
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
 
   <!-- ==========================================================================
        SIDEBAR NAVIGATION
        ========================================================================== -->
   <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-icon">T</div>
-      <div>
-        <div class="brand-title" id="lbl-brand-title">استخبارات طلعت مصطفى</div>
-        <div class="brand-subtitle" id="lbl-brand-sub">درع الفحص النافي للجهالة</div>
+    <div class="brand" style="justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="brand-icon">T</div>
+        <div>
+          <div class="brand-title" id="lbl-brand-title">استخبارات طلعت مصطفى</div>
+          <div class="brand-subtitle" id="lbl-brand-sub">درع الفحص النافي للجهالة</div>
+        </div>
       </div>
+      <button class="btn-close-sidebar" onclick="closeMobileSidebar()" aria-label="إغلاق">&times;</button>
     </div>
 
     <nav class="nav-menu">
@@ -988,6 +1270,11 @@
   <div class="main-wrapper">
     <!-- TOP BAR -->
     <header class="topbar">
+      <!-- Mobile Hamburger Toggle Button -->
+      <button class="btn-hamburger" id="btn-mobile-nav" onclick="toggleMobileSidebar()" aria-label="تبديل القائمة">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+
       <div class="page-title">
         <span id="current-tab-name">لوحة القيادة التنفيذية</span>
         <span class="badge-status" id="lbl-badge-audited">مدقق رسمياً من الإفصاحات والمصادر المباشرة</span>
@@ -1020,16 +1307,17 @@
         <!-- Excel Download Button -->
         <button class="btn-action highlight" onclick="openExcelModal()" title="تحميل ملفات الإكسيل الأصلية الحسابية">
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          <span id="btn-excel-lbl">ملفات الإكسيل الأصلية (Excel Sources)</span>
+          <span class="excel-lbl-full" id="btn-excel-lbl">ملفات الإكسيل الأصلية (Excel Sources)</span>
+          <span class="excel-lbl-short" style="display:none;">Excel (.xlsx)</span>
         </button>
 
-        <button class="btn-action" onclick="openPresenterMode()">
+        <button class="btn-action desktop-only" onclick="openPresenterMode()">
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
           <span id="btn-presenter-lbl">وضع العرض التنفيذي</span>
         </button>
 
         <!-- Export / Print -->
-        <button class="btn-action" onclick="window.print()">
+        <button class="btn-action desktop-only" onclick="window.print()">
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
           <span id="btn-print-lbl">طباعة / تصدير PDF</span>
         </button>
@@ -4827,7 +5115,26 @@
       document.getElementById('calc-working-cap').innerText = `${workingCapital >= 0 ? '+' : ''}${(workingCapital / 1000).toFixed(2)}B ج.م`;
     }
 
+    
+    // Mobile Sidebar Drawer Handlers
+    function toggleMobileSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (sidebar) sidebar.classList.toggle('mobile-open');
+      if (backdrop) backdrop.classList.toggle('active');
+    }
+
+    function closeMobileSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (sidebar) sidebar.classList.remove('mobile-open');
+      if (backdrop) backdrop.classList.remove('active');
+    }
+
     function switchTab(tabId) {
+      if (typeof closeMobileSidebar === 'function') {
+        closeMobileSidebar();
+      }
       document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
       
